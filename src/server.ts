@@ -115,7 +115,8 @@ const listTasks = defineTool("list_tasks", {
 });
 
 // --- Initialize Copilot Client ---
-
+// NOTE: These variables are reserved for real GitHub Copilot SDK integration
+// Currently using mock responses for demonstration
 const client = new CopilotClient();
 let sessionMap = new Map();
 let isClientReady = false;
@@ -231,6 +232,9 @@ startServer().catch((error) => {
 // Graceful shutdown
 process.on("SIGINT", async () => {
   console.log("\n👋 Shutting down server...");
-  await client.stop();
+  // Only stop client if it was initialized
+  if (isClientReady) {
+    await client.stop();
+  }
   process.exit(0);
 });
