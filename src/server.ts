@@ -1,12 +1,20 @@
+import express from "express";
 import { CopilotClient, defineTool } from "@github/copilot-sdk";
-import * as readline from "node:readline";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(express.json());
+app.use(express.static(join(__dirname, "../public")));
 
 // --- Custom Tools for the Agent ---
 
-/**
- * A tool that performs a task based on structured input.
- * Customize this for your specific domain.
- */
 const performTask = defineTool("perform_task", {
   description:
     "Execute a specific task given a name and detailed instructions. " +
@@ -36,10 +44,9 @@ const performTask = defineTool("perform_task", {
     priority?: string;
   }) => {
     const priority = args.priority ?? "medium";
-    console.log(`\n⚡ Executing task: "${args.taskName}" [${priority}]`);
+    console.log(`⚡ Executing task: "${args.taskName}" [${priority}]`);
     console.log(`   Instructions: ${args.instructions}`);
 
-    // Simulate task execution — replace with your real logic
     return {
       status: "completed",
       taskName: args.taskName,
@@ -49,10 +56,6 @@ const performTask = defineTool("perform_task", {
   },
 });
 
-/**
- * A tool that looks up information from a knowledge base.
- * Replace the mock data with your actual data source.
- */
 const lookupInfo = defineTool("lookup_info", {
   description:
     "Look up information from the knowledge base on a given topic. " +
@@ -68,9 +71,8 @@ const lookupInfo = defineTool("lookup_info", {
     required: ["query"],
   },
   handler: async (args: { query: string }) => {
-    console.log(`\n🔍 Looking up: "${args.query}"`);
+    console.log(`🔍 Looking up: "${args.query}"`);
 
-    // Replace with actual knowledge base / API call
     return {
       query: args.query,
       results: [
@@ -84,9 +86,6 @@ const lookupInfo = defineTool("lookup_info", {
   },
 });
 
-/**
- * A tool to list or manage the agent's task queue.
- */
 const listTasks = defineTool("list_tasks", {
   description:
     "List all pending or completed tasks tracked by the agent. " +
@@ -103,9 +102,8 @@ const listTasks = defineTool("list_tasks", {
   },
   handler: async (args: { status?: string }) => {
     const filter = args.status ?? "all";
-    console.log(`\n📋 Listing tasks (filter: ${filter})`);
+    console.log(`📋 Listing tasks (filter: ${filter})`);
 
-    // Replace with real task store
     return {
       filter,
       tasks: [
@@ -116,60 +114,70 @@ const listTasks = defineTool("list_tasks", {
   },
 });
 
-// --- Agent Entry Point ---
+// --- Initialize Copilot Client ---
 
-async function main() {
-  const client = new CopilotClient();
-  const session = await client.createSession({
-    model: "gpt-4.1",
-    streaming: true,
-    tools: [performTask, lookupInfo, listTasks],
-    systemMessage: {
-      content:
-        "You are a helpful custom agent that can perform tasks, look up information, " +
-        "and manage a task queue. Be concise and action-oriented. When the user " +
-        "asks you to do something, use the appropriate tool to accomplish it.",
-    },
-  });
+const client = new CopilotClient();
+let sessionMap = new Map();
 
-  // Stream assistant responses to the console
-  session.on("assistant.message_delta", (event) => {
-    process.stdout.write(event.data.deltaContent);
-  });
-  session.on("session.idle", () => {
-    console.log();
-  });
+// --- API Routes ---
 
-  // Interactive REPL loop
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
+app.post("/api/chat", async (req, res) => {
+  try {
+    const { message } = req.body;
 
-  console.log("🤖 Epic Copilot Agent ready! Type your message (Ctrl+C to exit)\n");
+    if (!message || typeof message !== "string") {
+      return res.status(400).json({ error: "Invalid message" });
+    }
 
-  const prompt = () => {
-    rl.question("You: ", async (input) => {
-      const trimmed = input.trim();
-      if (!trimmed) {
-        prompt();
-        return;
-      }
-
-      await session.sendAndWait({ prompt: trimmed });
-      prompt();
+    // Create a new session for each request (simple approach)
+    // For production, you might want to maintain sessions per user
+    const session = await client.createSession({
+      model: "gpt-4.1",
+      streaming: false,
+      tools: [performTask, lookupInfo, listTasks],
+      systemMessage: {
+        content:
+          "You are a helpful custom agent that can perform tasks, look up information, " +
+          "and manage a task queue. Be concise and action-oriented. When the user " +
+          "asks you to do something, use the appropriate tool to accomplish it.",
+      },
     });
-  };
 
-  prompt();
+    let fullResponse = "";
 
-  // Graceful shutdown
-  process.on("SIGINT", async () => {
-    console.log("\n👋 Shutting down agent...");
-    rl.close();
-    await client.stop();
-    process.exit(0);
-  });
-}
+    // Collect the full response
+    session.on("assistant.message_delta", (event) => {
+      fullResponse += event.data.deltaContent;
+    });
 
-main().catch(console.error);
+    // Wait for the session to complete
+    await new Promise<void>((resolve, reject) => {
+      session.on("session.idle", () => resolve());
+      session.on("session.error", (event) => reject(new Error(event.data.message)));
+      
+      // Send the user message
+      session.sendAndWait({ prompt: message }).catch(reject);
+    });
+
+    res.json({ response: fullResponse });
+  } catch (error) {
+    console.error("Chat error:", error);
+    res.status(500).json({ 
+      error: "Failed to process message",
+      details: error instanceof Error ? error.message : String(error)
+    });
+  }
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Epic Copilot Web UI running at http://localhost:${PORT}`);
+  console.log(`   Open your browser and start chatting!`);
+});
+
+// Graceful shutdown
+process.on("SIGINT", async () => {
+  console.log("\n👋 Shutting down server...");
+  await client.stop();
+  process.exit(0);
+});
