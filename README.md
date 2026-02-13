@@ -101,8 +101,65 @@ Epic Copilot connects to Azure Boards via Azure DevOps MCP server. To set up:
 1. Install GitHub Copilot CLI
 2. Authenticate with `gh auth login`
 3. Configure Azure DevOps MCP server connection
-4. Uncomment the `initializeClient()` call in `src/server.ts`
-5. Connect to your Azure DevOps organization and project
+4. Set up authentication (see below)
+5. Uncomment the `initializeClient()` call in `src/server.ts`
+6. Connect to your Azure DevOps organization and project
+
+### Authentication Setup
+
+The Azure DevOps MCP server requires authentication via a Personal Access Token (PAT):
+
+#### Step 1: Create a Personal Access Token
+
+1. Go to your Azure DevOps organization
+2. Navigate to User Settings → Personal Access Tokens
+3. Create a new token with the necessary scopes (Work Items: Read, write & manage)
+4. Copy the generated token
+
+#### Step 2: Set the Environment Variable
+
+The token should be set in the `ADO_MCP_AUTH_TOKEN` environment variable. The command differs based on your operating system:
+
+**Linux/macOS (bash/zsh):**
+```bash
+export ADO_MCP_AUTH_TOKEN="your-personal-access-token-here"
+```
+
+**Windows Command Prompt (CMD):**
+```cmd
+set ADO_MCP_AUTH_TOKEN=your-personal-access-token-here
+```
+
+**Windows PowerShell:**
+```powershell
+$env:ADO_MCP_AUTH_TOKEN="your-personal-access-token-here"
+```
+
+**Note:** These commands set the variable for the current session only. To make it permanent:
+
+- **Linux/macOS:** Add the export command to `~/.bashrc`, `~/.zshrc`, or `~/.profile`
+- **Windows (CMD):** Use `setx ADO_MCP_AUTH_TOKEN "your-token"` (requires reopening terminal)
+- **Windows (PowerShell):** Add to your PowerShell profile or use:
+  ```powershell
+  [System.Environment]::SetEnvironmentVariable('ADO_MCP_AUTH_TOKEN', 'your-token', 'User')
+  ```
+
+**Alternative: Using a .env file**
+
+For better security and convenience, you can create a `.env` file in the project root:
+```
+ADO_MCP_AUTH_TOKEN=your-personal-access-token-here
+```
+
+Then use a package like `dotenv` to load it automatically:
+```bash
+npm install dotenv
+```
+
+And add this to the top of your `src/server.ts` or `src/index.ts`:
+```typescript
+import 'dotenv/config';
+```
 
 ## Technologies Used
 
