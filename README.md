@@ -127,7 +127,7 @@ export ADO_MCP_AUTH_TOKEN="your-personal-access-token-here"
 
 **Windows Command Prompt (CMD):**
 ```cmd
-set ADO_MCP_AUTH_TOKEN=your-personal-access-token-here
+set ADO_MCP_AUTH_TOKEN="your-personal-access-token-here"
 ```
 
 **Windows PowerShell:**
@@ -151,9 +151,9 @@ For better security and convenience, you can create a `.env` file in the project
 ADO_MCP_AUTH_TOKEN=your-personal-access-token-here
 ```
 
-Then use a package like `dotenv` to load it automatically:
+Then install and use `dotenv` to load it automatically:
 ```bash
-npm install dotenv
+npm install dotenv  # Regular dependency for production use
 ```
 
 And add this to the top of your `src/server.ts` or `src/index.ts`:
