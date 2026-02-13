@@ -124,10 +124,12 @@ async function main() {
     model: "gpt-4.1",
     streaming: true,
     tools: [performTask, lookupInfo, listTasks],
-    instructions:
-      "You are a helpful custom agent that can perform tasks, look up information, " +
-      "and manage a task queue. Be concise and action-oriented. When the user " +
-      "asks you to do something, use the appropriate tool to accomplish it.",
+    systemMessage: {
+      content:
+        "You are a helpful custom agent that can perform tasks, look up information, " +
+        "and manage a task queue. Be concise and action-oriented. When the user " +
+        "asks you to do something, use the appropriate tool to accomplish it.",
+    },
   });
 
   // Stream assistant responses to the console
