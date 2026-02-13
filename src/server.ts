@@ -154,12 +154,52 @@ app.post("/api/chat", async (req, res) => {
     let response = "";
     const lowerMessage = message.toLowerCase();
     
-    if (lowerMessage.includes("task") && lowerMessage.includes("create")) {
-      response = "I'd be happy to help you create a task! To create a task, I need:\n\n" +
-                 "1. **Task name** - A short title for your task\n" +
-                 "2. **Instructions** - Detailed description of what needs to be done\n" +
-                 "3. **Priority** - Choose from: low, medium, or high\n\n" +
-                 "Please provide these details and I'll create the task for you.";
+    if (lowerMessage.includes("epic") && (lowerMessage.includes("create") || lowerMessage.includes("new"))) {
+      response = "I'd be happy to help you create an epic! To create an epic in Azure Boards, I need:\n\n" +
+                 "1. **Title** - A clear, concise name for the epic\n" +
+                 "2. **Description** - What problem does this epic solve?\n" +
+                 "3. **Acceptance Criteria** - How will you know it's complete?\n" +
+                 "4. **Priority** - Business value: High, Medium, or Low\n\n" +
+                 "Please provide these details and I'll help create the epic.";
+    } else if (lowerMessage.includes("user story") || lowerMessage.includes("user stories")) {
+      response = "I can help you manage user stories! Here's what I can do:\n\n" +
+                 "📝 **Create User Stories**\n" +
+                 "- Define story with acceptance criteria\n" +
+                 "- Link to parent epic\n" +
+                 "- Set story points and priority\n\n" +
+                 "📋 **List User Stories**\n" +
+                 "- View by sprint\n" +
+                 "- Filter by status or assignee\n" +
+                 "- Sort by priority\n\n" +
+                 "What would you like to do?";
+    } else if (lowerMessage.includes("sprint")) {
+      response = "Sprint management is one of my core features! I can help with:\n\n" +
+                 "🏃 **Sprint Planning**\n" +
+                 "- Create new sprints\n" +
+                 "- Add work items to sprint backlog\n" +
+                 "- Calculate team capacity\n\n" +
+                 "📊 **Sprint Tracking**\n" +
+                 "- View sprint burndown\n" +
+                 "- Check progress on sprint goals\n" +
+                 "- Identify blockers\n\n" +
+                 "Tell me what you need for your sprint!";
+    } else if (lowerMessage.includes("bug") || lowerMessage.includes("bugs")) {
+      response = "I can help you track and manage bugs:\n\n" +
+                 "🐛 **Bug Management**\n" +
+                 "- Create new bugs with severity levels\n" +
+                 "- List bugs by priority or status\n" +
+                 "- Assign bugs to team members\n" +
+                 "- Track bug resolution progress\n\n" +
+                 "What bug-related task can I help with?";
+    } else if (lowerMessage.includes("report") || lowerMessage.includes("status")) {
+      response = "I can generate various reports for your project:\n\n" +
+                 "📊 **Available Reports**\n" +
+                 "- Sprint burndown charts\n" +
+                 "- Velocity trends\n" +
+                 "- Work item distribution\n" +
+                 "- Team capacity analysis\n" +
+                 "- Bug trends and metrics\n\n" +
+                 "Which report would you like to see?";
     } else if (lowerMessage.includes("list") && lowerMessage.includes("task")) {
       response = "Here are your current tasks:\n\n" +
                  "📋 **Task List**\n" +
@@ -169,28 +209,42 @@ app.post("/api/chat", async (req, res) => {
       response = "I can help you search the knowledge base! What specific topic or information are you looking for? " +
                  "I have access to various resources and can provide detailed information.";
     } else if (lowerMessage.includes("hello") || lowerMessage.includes("hi")) {
-      response = "Hello! 👋 I'm ready to assist you. I can help you with:\n\n" +
-                 "• **Creating and managing tasks** - Add tasks with priorities\n" +
-                 "• **Looking up information** - Search the knowledge base\n" +
-                 "• **Viewing task lists** - See all your pending and completed tasks\n\n" +
-                 "What would you like to do?";
+      response = "Hello! 👋 I'm Epic Copilot, your AI assistant for Azure Boards. I can help you:\n\n" +
+                 "🎯 **Manage Work Items**\n" +
+                 "• Create and track epics, user stories, tasks, and bugs\n" +
+                 "• Plan and manage sprints\n" +
+                 "• Query and filter your backlog\n\n" +
+                 "📊 **Project Insights**\n" +
+                 "• Generate status reports\n" +
+                 "• View team velocity and burndown charts\n" +
+                 "• Track project progress\n\n" +
+                 "What would you like to work on today?";
     } else if (lowerMessage.includes("help") || lowerMessage.includes("what can you do")) {
-      response = "I'm your Epic Copilot Agent! Here's what I can do:\n\n" +
-                 "🔧 **Task Management**\n" +
-                 "- Create tasks with custom priorities\n" +
-                 "- List all tasks by status\n" +
-                 "- Track task completion\n\n" +
-                 "🔍 **Information Lookup**\n" +
-                 "- Search knowledge base\n" +
-                 "- Get detailed information on topics\n\n" +
-                 "Just ask me naturally, and I'll help!";
+      response = "I'm Epic Copilot - your Azure Boards AI assistant! Here's what I can do:\n\n" +
+                 "📋 **Work Item Management**\n" +
+                 "- Create epics, user stories, tasks, and bugs\n" +
+                 "- Update work item status and assignments\n" +
+                 "- Link related work items\n\n" +
+                 "🏃 **Sprint Management**\n" +
+                 "- Plan sprint backlogs\n" +
+                 "- Track sprint progress\n" +
+                 "- Generate burndown reports\n\n" +
+                 "🔍 **Queries & Reports**\n" +
+                 "- Search work items with custom filters\n" +
+                 "- Generate project metrics\n" +
+                 "- Track team velocity\n\n" +
+                 "💡 **Try saying:**\n" +
+                 "• 'Create a new epic for mobile app features'\n" +
+                 "• 'Show sprint backlog items'\n" +
+                 "• 'List high-priority bugs'";
     } else {
       response = "I understand you're saying: \"" + message + "\"\n\n" +
-                 "I'm here to help! You can ask me to:\n" +
-                 "• Create a task\n" +
-                 "• List your tasks\n" +
-                 "• Look up information\n\n" +
-                 "How can I assist you today?";
+                 "I'm Epic Copilot, here to help with Azure Boards! You can ask me to:\n" +
+                 "• Create or manage epics, user stories, tasks, and bugs\n" +
+                 "• Plan and track sprints\n" +
+                 "• Generate reports and insights\n" +
+                 "• Query your backlog\n\n" +
+                 "How can I assist with your Azure Boards today?";
     }
 
     res.json({ response });
@@ -219,7 +273,8 @@ async function startServer() {
   
   app.listen(PORT, () => {
     console.log(`🚀 Epic Copilot Web UI running at http://localhost:${PORT}`);
-    console.log(`   Open your browser and start chatting!`);
+    console.log(`   Your Azure Boards AI assistant is ready!`);
+    console.log(`   Open your browser and start managing work items.`);
     console.log(`   📝 Note: Currently using mock responses for demonstration`);
   });
 }

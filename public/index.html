@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Epic Copilot Chat</title>
+    <title>Epic Copilot - Azure Boards AI Assistant</title>
     <style>
         * {
             margin: 0;
@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -35,7 +35,7 @@
         }
 
         .chat-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
             color: white;
             padding: 20px;
             text-align: center;
@@ -88,7 +88,7 @@
         }
 
         .message.user .message-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
             color: white;
             border-bottom-right-radius: 4px;
         }
@@ -113,14 +113,14 @@
         }
 
         .message.user .message-avatar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
             color: white;
             order: 2;
         }
 
         .message.assistant .message-avatar {
             background: #f0f0f0;
-            color: #667eea;
+            color: #0078d4;
         }
 
         .chat-input-container {
@@ -142,12 +142,12 @@
         }
 
         #messageInput:focus {
-            border-color: #667eea;
+            border-color: #0078d4;
         }
 
         #sendButton {
             padding: 12px 28px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
             color: white;
             border: none;
             border-radius: 25px;
@@ -159,7 +159,7 @@
 
         #sendButton:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 12px rgba(0, 120, 212, 0.4);
         }
 
         #sendButton:disabled {
@@ -183,7 +183,7 @@
         .typing-indicator span {
             height: 8px;
             width: 8px;
-            background: #667eea;
+            background: #0078d4;
             border-radius: 50%;
             display: inline-block;
             margin: 0 2px;
@@ -220,14 +220,21 @@
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            🤖 Epic Copilot Agent
-            <div class="subtitle">AI-powered assistant ready to help</div>
+            🎯 Epic Copilot
+            <div class="subtitle">Azure Boards AI Assistant</div>
         </div>
         <div class="chat-messages" id="chatMessages">
             <div class="message assistant">
-                <div class="message-avatar">🤖</div>
+                <div class="message-avatar">🎯</div>
                 <div class="message-content">
-                    Hello! I'm your Epic Copilot Agent. I can help you perform tasks, look up information, and manage your task queue. How can I assist you today?
+                    <strong>Welcome to Epic Copilot!</strong><br><br>
+                    I'm your AI assistant for managing Azure Boards work items. I can help project managers, product owners, and delivery managers with complex Azure DevOps tasks.<br><br>
+                    <strong>💡 Try one of these to get started:</strong><br>
+                    • "Create a new epic for Q1 mobile features"<br>
+                    • "List all user stories in current sprint"<br>
+                    • "Show high-priority bugs in my backlog"<br>
+                    • "Plan sprint work items"<br>
+                    • "Generate a project status report"
                 </div>
             </div>
         </div>
@@ -255,7 +262,7 @@
             
             const avatar = document.createElement('div');
             avatar.className = 'message-avatar';
-            avatar.textContent = isUser ? '👤' : '🤖';
+            avatar.textContent = isUser ? '👤' : '🎯';
             
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
@@ -281,7 +288,7 @@
                 
                 const avatar = document.createElement('div');
                 avatar.className = 'message-avatar';
-                avatar.textContent = '🤖';
+                avatar.textContent = '🎯';
                 
                 const indicator = document.createElement('div');
                 indicator.className = 'typing-indicator active';

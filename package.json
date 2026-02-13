@@ -1,7 +1,7 @@
 {
   "name": "epic-copilot",
   "version": "1.0.0",
-  "description": "AI-powered custom agent built with the GitHub Copilot SDK",
+  "description": "AI-powered assistant for managing Azure Boards work items using GitHub Copilot SDK and Azure DevOps MCP",
   "main": "dist/index.js",
   "scripts": {
     "start": "tsx src/index.ts",
