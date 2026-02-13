@@ -201,12 +201,6 @@ app.post("/api/chat", async (req, res) => {
                  "- Bug trends and metrics\n\n" +
                  "Which report would you like to see?";
     } else if (lowerMessage.includes("list") && lowerMessage.includes("task")) {
-      response = "I'd be happy to help you create a task! To create a task, I need:\n\n" +
-                 "1. **Task name** - A short title for your task\n" +
-                 "2. **Instructions** - Detailed description of what needs to be done\n" +
-                 "3. **Priority** - Choose from: low, medium, or high\n\n" +
-                 "Please provide these details and I'll create the task for you.";
-    } else if (lowerMessage.includes("list") && lowerMessage.includes("task")) {
       response = "Here are your current tasks:\n\n" +
                  "📋 **Task List**\n" +
                  "1. Example task - Status: pending - Priority: medium\n\n" +
