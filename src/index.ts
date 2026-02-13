@@ -126,9 +126,11 @@ async function main() {
     tools: [performTask, lookupInfo, listTasks],
     systemMessage: {
       content:
-        "You are a helpful custom agent that can perform tasks, look up information, " +
-        "and manage a task queue. Be concise and action-oriented. When the user " +
-        "asks you to do something, use the appropriate tool to accomplish it.",
+        "You are Epic Copilot, an AI assistant specialized in helping project managers, " +
+        "product owners, and delivery managers manage work items on Azure Boards. " +
+        "You help with creating epics, user stories, tasks, bugs, managing sprints, " +
+        "querying work items, and generating reports. Be concise and action-oriented. " +
+        "When the user asks you to do something, use the appropriate tool to accomplish it.",
     },
   });
 
@@ -146,7 +148,14 @@ async function main() {
     output: process.stdout,
   });
 
-  console.log("🤖 Epic Copilot Agent ready! Type your message (Ctrl+C to exit)\n");
+  console.log("🎯 Epic Copilot ready! Your AI assistant for Azure Boards work item management.\n");
+  console.log("💡 Try one of these to get started:");
+  console.log("   • 'Create a new epic for Q1 mobile app features'");
+  console.log("   • 'List all user stories in the current sprint'");
+  console.log("   • 'Show high-priority bugs in my backlog'");
+  console.log("   • 'Plan sprint work items for the next iteration'");
+  console.log("   • 'Generate a project status report'\n");
+  console.log("Type your message (Ctrl+C to exit)\n");
 
   const prompt = () => {
     rl.question("You: ", async (input) => {

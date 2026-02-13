@@ -1,13 +1,14 @@
-# Epic Copilot Agent
+# Epic Copilot
 
-AI-powered custom agent built with the GitHub Copilot SDK.
+AI-powered assistant for project managers, product owners, and delivery managers to manage work items on Azure Boards. Perform complex tasks using AI by connecting GitHub Copilot SDK with Azure Boards via Azure DevOps MCP.
 
 ## Features
 
-- 🤖 Interactive chatbot interface
-- 🔧 Task management (create, list, track tasks)
-- 🔍 Knowledge base lookup
-- 💬 Natural language interactions
+- 🎯 Azure Boards work item management
+- 📊 Epic and user story planning
+- 🔧 Sprint management and task tracking
+- 🔍 Work item queries and reporting
+- 💬 Natural language interactions with Azure DevOps
 - 🎨 Beautiful, modern web UI
 
 ## Getting Started
@@ -77,29 +78,31 @@ epic-copilot/
 └── tsconfig.json
 ```
 
-## Using the Chatbot
+## Using Epic Copilot
 
-The chatbot can help you with:
+Epic Copilot helps you manage Azure Boards work items with:
 
-1. **Creating Tasks**: Ask to create a task with name, instructions, and priority
-2. **Listing Tasks**: View all your pending and completed tasks
-3. **Looking Up Information**: Search the knowledge base for specific topics
+1. **Creating Work Items**: Epics, user stories, tasks, and bugs
+2. **Managing Sprints**: Plan and track sprint work
+3. **Querying Work Items**: Search and filter your backlog
+4. **Reporting**: Get insights on project progress
 
 ### Example Commands
 
-- "Hello, can you help me create a task?"
-- "List all my tasks"
-- "Look up information about GitHub Copilot"
-- "What can you do?"
+- "Create a new epic for the mobile app redesign"
+- "List all user stories in the current sprint"
+- "Show me high-priority bugs assigned to my team"
+- "Generate a sprint burndown report"
 
-## Integration with GitHub Copilot SDK
+## Integration with Azure DevOps
 
-The current implementation uses mock responses for demonstration purposes. To integrate with the real GitHub Copilot SDK:
+Epic Copilot connects to Azure Boards via Azure DevOps MCP server. To set up:
 
 1. Install GitHub Copilot CLI
 2. Authenticate with `gh auth login`
-3. Uncomment the `initializeClient()` call in `src/server.ts`
-4. Update the API endpoint to use the real Copilot session
+3. Configure Azure DevOps MCP server connection
+4. Uncomment the `initializeClient()` call in `src/server.ts`
+5. Connect to your Azure DevOps organization and project
 
 ## Technologies Used
 
