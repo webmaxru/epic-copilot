@@ -1,4 +1,8 @@
-# Epic Copilot
+# Epic Copilot - AI-powered assistant for project managers, product owners, and delivery managers
+
+<p align="center">
+  <img src="public/assets/logo.png" alt="Epic Copilot Logo" width="400" />
+</p>
 
 Epic Copilot is an AI-powered assistant that helps project managers, product owners, and delivery managers work in lockstep with developers. It operates in the same context and on the same underlying tools, enabling clearer communication and smoother collaboration across roles, powered by the GitHub Copilot SDK.
 
@@ -13,6 +17,12 @@ Built around Azure Boards, Epic Copilot brings together work item management and
 - 💬 Natural language interactions with Azure DevOps
 - 📧 Microsoft 365 data access (emails, meetings, files) via Work IQ MCP
 - 🎨 Modern web UI with streaming responses
+
+## Screenshots
+
+![Screenshot 1](public/assets/screenshot-1.png)
+
+![Screenshot 2](public/assets/screenshot-2.png)
 
 ## Prerequisites
 
