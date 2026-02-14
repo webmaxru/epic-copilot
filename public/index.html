@@ -11,51 +11,318 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+        :root {
+            --header-h: 56px;
+            --sidebar-w: 260px;
+            --accent: #0078d4;
+            --accent-dark: #005a9e;
+            --bg-primary: #f4f5f7;
+            --bg-surface: #ffffff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #5c5c6e;
+            --border: #e1e4e8;
+            --sidebar-bg: #1b1f3b;
+            --sidebar-text: #c1c7d0;
+            --sidebar-active: rgba(0, 120, 212, 0.15);
         }
 
-        .chat-container {
-            background: white;
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-primary);
+            height: 100vh;
+            overflow: hidden;
+            color: var(--text-primary);
+        }
+
+        /* ── Top Header Bar ── */
+        .dashboard-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-h);
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-logo {
+            width: 32px;
+            height: 32px;
+            background: var(--accent);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+        }
+
+        .header-title span {
+            color: var(--text-secondary);
+            font-weight: 400;
+            margin-left: 6px;
+            font-size: 14px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            padding: 4px 10px;
+            background: #f0fdf4;
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 800px;
-            height: 90vh;
-            max-height: 700px;
+            border: 1px solid #bbf7d0;
+        }
+
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .header-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 12px 6px 6px;
+            border-radius: 8px;
+            cursor: default;
+            transition: background 0.15s;
+        }
+
+        .header-user:hover {
+            background: var(--bg-primary);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .user-info {
+            line-height: 1.2;
+        }
+
+        .user-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .user-role {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            position: fixed;
+            top: var(--header-h);
+            left: 0;
+            bottom: 0;
+            width: var(--sidebar-w);
+            background: var(--sidebar-bg);
+            padding: 16px 0;
+            overflow-y: auto;
+            z-index: 90;
+        }
+
+        .sidebar-section {
+            padding: 0 16px;
+            margin-bottom: 24px;
+        }
+
+        .sidebar-section-title {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            padding: 0 12px;
+            font-weight: 600;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 6px;
+            color: var(--sidebar-text);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+        }
+
+        .sidebar-item.active {
+            background: var(--sidebar-active);
+            color: #60a5fa;
+        }
+
+        .sidebar-icon {
+            width: 18px;
+            text-align: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .sidebar-badge {
+            margin-left: auto;
+            background: var(--accent);
+            color: white;
+            font-size: 10px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 10px;
+        }
+
+        .sidebar-badge.skill-tag {
+            background: transparent;
+            border: 1px solid #6b7280;
+            color: #9ca3af;
+            font-size: 9px;
+            padding: 1px 6px;
+        }
+
+        .agent-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+        }
+
+        .add-skill-btn {
+            border: 1px dashed #4b5563;
+            border-radius: 6px;
+            margin-top: 4px;
+            opacity: 0.7;
+            transition: opacity 0.15s, border-color 0.15s;
+        }
+
+        .add-skill-btn:hover {
+            opacity: 1;
+            border-color: var(--accent);
+            color: #60a5fa !important;
+        }
+
+        /* ── Main Content ── */
+        .main-content {
+            margin-left: var(--sidebar-w);
+            margin-top: var(--header-h);
+            height: calc(100vh - var(--header-h));
+            display: flex;
+            flex-direction: column;
+            background: var(--bg-primary);
+        }
+
+        /* ── Chat Panel ── */
+        .chat-panel {
+            flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        .chat-header {
-            background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            border-radius: 20px 20px 0 0;
+        .chat-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 28px;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border);
         }
 
-        .chat-header .subtitle {
-            font-size: 14px;
-            font-weight: normal;
-            opacity: 0.9;
-            margin-top: 5px;
+        .chat-toolbar-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chat-toolbar-title .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        .chat-toolbar-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .toolbar-btn {
+            padding: 6px 14px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--bg-surface);
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--bg-primary);
+            color: var(--text-primary);
         }
 
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
-            background: #f7f9fc;
+            padding: 24px 28px;
+            background: var(--bg-primary);
         }
 
         .message {
@@ -63,116 +330,125 @@
             display: flex;
             align-items: flex-start;
             animation: slideIn 0.3s ease;
+            max-width: 900px;
         }
 
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         .message.user {
             justify-content: flex-end;
+            margin-left: auto;
         }
 
         .message-content {
-            max-width: 70%;
-            padding: 12px 16px;
-            border-radius: 18px;
+            max-width: 75%;
+            padding: 14px 18px;
+            border-radius: 12px;
             word-wrap: break-word;
+            font-size: 14px;
+            line-height: 1.6;
         }
 
         .message.user .message-content {
-            background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
+            background: var(--accent);
             color: white;
             border-bottom-right-radius: 4px;
         }
 
         .message.assistant .message-content {
-            background: white;
-            color: #333;
-            border: 1px solid #e0e0e0;
+            background: var(--bg-surface);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
             border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
 
         .message-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
             margin: 0 10px;
             flex-shrink: 0;
+            font-size: 14px;
         }
 
         .message.user .message-avatar {
-            background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
+            background: linear-gradient(135deg, var(--accent), #6366f1);
             color: white;
             order: 2;
+            border-radius: 50%;
         }
 
         .message.assistant .message-avatar {
-            background: #f0f0f0;
-            color: #0078d4;
+            background: #eef2ff;
+            color: var(--accent);
         }
 
         .chat-input-container {
-            padding: 20px;
-            background: white;
-            border-top: 1px solid #e0e0e0;
+            padding: 16px 28px 20px;
+            background: var(--bg-surface);
+            border-top: 1px solid var(--border);
             display: flex;
             gap: 10px;
+            align-items: center;
         }
 
         #messageInput {
             flex: 1;
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 25px;
+            padding: 12px 18px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
             font-size: 14px;
             outline: none;
-            transition: border-color 0.3s;
+            background: var(--bg-primary);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: inherit;
         }
 
         #messageInput:focus {
-            border-color: #0078d4;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
         }
 
         #sendButton {
-            padding: 12px 28px;
-            background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
+            padding: 11px 24px;
+            background: var(--accent);
             color: white;
             border: none;
-            border-radius: 25px;
-            font-size: 14px;
-            font-weight: bold;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: background 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         #sendButton:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 120, 212, 0.4);
+            background: var(--accent-dark);
+            box-shadow: 0 2px 8px rgba(0, 120, 212, 0.3);
         }
 
         #sendButton:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
         }
 
         .typing-indicator {
             display: none;
-            padding: 12px 16px;
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 18px;
+            padding: 14px 18px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             width: fit-content;
         }
 
@@ -181,80 +457,545 @@
         }
 
         .typing-indicator span {
-            height: 8px;
-            width: 8px;
-            background: #0078d4;
+            height: 7px;
+            width: 7px;
+            background: var(--accent);
             border-radius: 50%;
             display: inline-block;
             margin: 0 2px;
             animation: bounce 1.4s infinite;
         }
 
-        .typing-indicator span:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-
-        .typing-indicator span:nth-child(3) {
-            animation-delay: 0.4s;
-        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
 
         @keyframes bounce {
-            0%, 60%, 100% {
-                transform: translateY(0);
-            }
-            30% {
-                transform: translateY(-10px);
-            }
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
         }
 
         .error-message {
-            background: #fee;
-            color: #c33;
-            padding: 12px;
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 12px 16px;
             border-radius: 8px;
-            margin: 10px 20px;
-            border: 1px solid #fcc;
+            margin: 10px 0;
+            border: 1px solid #fecaca;
+            font-size: 13px;
+        }
+
+        /* ── Welcome Card ── */
+        .welcome-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .welcome-card h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .welcome-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+        }
+
+        .quick-action {
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.15s;
+            background: var(--bg-primary);
+            text-align: left;
+        }
+
+        .quick-action:hover {
+            border-color: var(--accent);
+            background: #eef6ff;
+            color: var(--accent);
+        }
+
+        .quick-action-icon {
+            margin-right: 6px;
+        }
+
+        /* ── Markdown content styles ── */
+        .message-content h1,
+        .message-content h2,
+        .message-content h3,
+        .message-content h4 {
+            margin: 12px 0 6px;
+            line-height: 1.3;
+        }
+        .message-content h1 { font-size: 1.4em; }
+        .message-content h2 { font-size: 1.25em; }
+        .message-content h3 { font-size: 1.1em; }
+        .message-content h4 { font-size: 1em; }
+        .message-content h1:first-child,
+        .message-content h2:first-child,
+        .message-content h3:first-child,
+        .message-content h4:first-child { margin-top: 0; }
+
+        .message-content p { margin: 6px 0; }
+        .message-content p:first-child { margin-top: 0; }
+        .message-content p:last-child  { margin-bottom: 0; }
+
+        .message-content ul,
+        .message-content ol {
+            margin: 6px 0;
+            padding-left: 1.5em;
+        }
+        .message-content li { margin: 2px 0; }
+
+        .message-content code {
+            background: #f0f2f5;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.9em;
+        }
+
+        .message-content pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 12px 14px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 8px 0;
+            font-size: 0.85em;
+            line-height: 1.5;
+        }
+        .message-content pre code {
+            background: none;
+            padding: 0;
+            border-radius: 0;
+            color: inherit;
+            font-size: inherit;
+        }
+
+        .message-content blockquote {
+            border-left: 3px solid var(--accent);
+            margin: 8px 0;
+            padding: 4px 12px;
+            color: #555;
+            background: #f7f9fc;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .message-content hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 10px 0;
+        }
+
+        .message-content table {
+            border-collapse: collapse;
+            margin: 8px 0;
+            width: 100%;
+            font-size: 0.9em;
+        }
+        .message-content th,
+        .message-content td {
+            border: 1px solid #ddd;
+            padding: 6px 10px;
+            text-align: left;
+        }
+        .message-content th {
+            background: #f0f2f5;
+            font-weight: 600;
+        }
+
+        .message-content a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .message-content a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Scrollbar ── */
+        .chat-messages::-webkit-scrollbar { width: 6px; }
+        .chat-messages::-webkit-scrollbar-track { background: transparent; }
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+        .chat-messages::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
         }
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            🎯 Epic Copilot
-            <div class="subtitle">Azure Boards AI Assistant</div>
+    <!-- Top Header -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <div class="header-logo">E</div>
+            <div class="header-title">Epic Copilot <span>Azure Boards Assistant</span></div>
+            <div class="header-title" style="margin-left: 16px; border-left: 1px solid var(--border); padding-left: 16px;"><span id="projectName"></span></div>
         </div>
-        <div class="chat-messages" id="chatMessages">
-            <div class="message assistant">
-                <div class="message-avatar">🎯</div>
-                <div class="message-content">
-                    <strong>Welcome to Epic Copilot!</strong><br><br>
-                    I'm your AI assistant for managing Azure Boards work items. I can help project managers, product owners, and delivery managers with complex Azure DevOps tasks.<br><br>
-                    <strong>💡 Try one of these to get started:</strong><br>
-                    • "Create a new epic for Q1 mobile features"<br>
-                    • "List all user stories in current sprint"<br>
-                    • "Show high-priority bugs in my backlog"<br>
-                    • "Plan sprint work items"<br>
-                    • "Generate a project status report"
+        <div class="header-right">
+            <div class="header-status">
+                <div class="status-dot"></div>
+                Connected
+            </div>
+            <div class="header-user">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-info">
+                    <div class="user-name" id="userName">Loading...</div>
+                    <div class="user-role">Project Manager</div>
                 </div>
             </div>
         </div>
-        <div class="chat-input-container">
-            <input 
-                type="text" 
-                id="messageInput" 
-                placeholder="Type your message..." 
-                autocomplete="off"
-            />
-            <button id="sendButton">Send</button>
+    </header>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Custom Agents</div>
+            <div class="sidebar-item agent-item" data-prompt="You are a Product Owner. Help me prioritize the backlog and define acceptance criteria for upcoming features.">
+                <span class="sidebar-icon agent-avatar" style="background:#6366f1">PO</span> Product Owner
+            </div>
+            <div class="sidebar-item agent-item" data-prompt="You are a Scrum Master. Help me facilitate sprint planning, identify blockers, and improve team velocity.">
+                <span class="sidebar-icon agent-avatar" style="background:#0ea5e9">SM</span> Scrum Master
+            </div>
+            <div class="sidebar-item agent-item" data-prompt="You are a Tech Lead. Help me review architecture decisions, evaluate technical debt, and plan refactoring.">
+                <span class="sidebar-icon agent-avatar" style="background:#f59e0b">TL</span> Tech Lead
+            </div>
+            <div class="sidebar-item agent-item" data-prompt="You are a QA Engineer. Help me create test plans, identify edge cases, and define quality gates for the release.">
+                <span class="sidebar-icon agent-avatar" style="background:#10b981">QA</span> QA Engineer
+            </div>
+            <div class="sidebar-item agent-item" data-prompt="You are a UX Designer. Help me evaluate user flows, suggest UI improvements, and write usability test scenarios.">
+                <span class="sidebar-icon agent-avatar" style="background:#ec4899">UX</span> UX Designer
+            </div>
+            <div class="sidebar-item agent-item" data-prompt="You are a DevOps Engineer. Help me set up CI/CD pipelines, review infrastructure configurations, and plan deployment strategies.">
+                <span class="sidebar-icon agent-avatar" style="background:#8b5cf6">DO</span> DevOps Engineer
+            </div>
         </div>
-    </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Saved Prompts</div>
+            <div class="sidebar-item task-item" data-prompt="Generate a sprint retrospective summary with action items based on the last sprint's work.">
+                <span class="sidebar-icon">⚡</span> Sprint Retro Summary
+            </div>
+            <div class="sidebar-item task-item" data-prompt="Draft a release notes document for the latest completed features and bug fixes.">
+                <span class="sidebar-icon">📝</span> Draft Release Notes
+            </div>
+            <div class="sidebar-item task-item" data-prompt="Analyze the current backlog and suggest priority rankings based on business value and effort.">
+                <span class="sidebar-icon">🔀</span> Prioritize Backlog
+            </div>
+            <div class="sidebar-item task-item" data-prompt="Break down a high-level epic into detailed user stories with acceptance criteria.">
+                <span class="sidebar-icon">✂️</span> Break Down Epic
+            </div>
+            <div class="sidebar-item task-item" data-prompt="Identify risks and dependencies across the current sprint's work items and suggest mitigations.">
+                <span class="sidebar-icon">🛡️</span> Risk Assessment
+            </div>
+            <div class="sidebar-item task-item" data-prompt="Generate a daily standup summary from recent activity and highlight blockers.">
+                <span class="sidebar-icon">☀️</span> Standup Summary
+            </div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">Agent Skills</div>
+            <div class="sidebar-item skill-item" data-prompt="Use your Azure DevOps integration skill to query and manage work items in my project.">
+                <span class="sidebar-icon">🔗</span> ADO Integration
+                <span class="sidebar-badge skill-tag">built-in</span>
+            </div>
+            <div class="sidebar-item skill-item" data-prompt="Use your code review skill to analyze the latest pull requests and provide feedback.">
+                <span class="sidebar-icon">🔍</span> Code Review
+                <span class="sidebar-badge skill-tag">built-in</span>
+            </div>
+            <div class="sidebar-item skill-item" data-prompt="Use your estimation skill to help me estimate story points for the selected work items.">
+                <span class="sidebar-icon">🧮</span> Estimation
+                <span class="sidebar-badge skill-tag">built-in</span>
+            </div>
+            <div class="sidebar-item skill-item" data-prompt="Use your reporting skill to generate project health metrics and burndown charts.">
+                <span class="sidebar-icon">📊</span> Reporting
+                <span class="sidebar-badge skill-tag">built-in</span>
+            </div>
+            <div class="sidebar-item skill-item" data-prompt="Use your documentation skill to auto-generate technical documentation from code and work items.">
+                <span class="sidebar-icon">📄</span> Documentation
+                <span class="sidebar-badge skill-tag">custom</span>
+            </div>
+            <div class="sidebar-item add-skill-btn" id="addSkillBtn">
+                <span class="sidebar-icon">＋</span> Add New Skill…
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="chat-panel">
+            <div class="chat-toolbar">
+                <div class="chat-toolbar-title">
+                    <span class="dot"></span>
+                    AI Assistant
+                </div>
+                <div class="chat-toolbar-actions">
+                    <button class="toolbar-btn" id="clearChatBtn">Clear Chat</button>
+                    <button class="toolbar-btn" id="newSessionBtn">New Session</button>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="welcome-card">
+                    <h2>Welcome to Epic Copilot</h2>
+                    <p>I'm your AI assistant for managing Azure Boards work items. I help project managers, product owners, and delivery managers with complex Azure DevOps tasks.</p>
+                    <div class="quick-actions">
+                        <button class="quick-action" onclick="sendQuickAction(this)">
+                            <span class="quick-action-icon">📧</span>Summarize the latest email thread about this project and create an epic with acceptance criteria from it
+                        </button>
+                        <button class="quick-action" onclick="sendQuickAction(this)">
+                            <span class="quick-action-icon">🔗</span>Find work items that have no parent epic and suggest which existing epic each should belong to
+                        </button>
+                        <button class="quick-action" onclick="sendQuickAction(this)">
+                            <span class="quick-action-icon">⚠️</span>Analyze the current sprint and flag any user stories at risk of not being completed based on remaining capacity
+                        </button>
+                        <button class="quick-action" onclick="sendQuickAction(this)">
+                            <span class="quick-action-icon">✂️</span>Break down the most recent epic into features and user stories with acceptance criteria
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <input 
+                    type="text" 
+                    id="messageInput" 
+                    placeholder="Ask about your Azure Boards work items..." 
+                    autocomplete="off"
+                />
+                <button id="sendButton">
+                    Send
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+            </div>
+        </div>
+    </main>
 
     <script>
         const chatMessages = document.getElementById('chatMessages');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
+        const clearChatBtn = document.getElementById('clearChatBtn');
+        const newSessionBtn = document.getElementById('newSessionBtn');
 
         let typingIndicator = null;
+        let sessionId = null;
+        let initialising = true;
+
+        // --- Active Project (temp mock) ---
+        const PROJECT_NAME = 'Parts Unlimited';
+
+        // --- Username ---
+        function getUsername() {
+            // Try environment-passed username, fallback to a sensible default
+            const params = new URLSearchParams(window.location.search);
+            return params.get('user') || localStorage.getItem('epiccopilot_user') || 'Maxim Salnikov';
+        }
+
+        function setUserDisplay(name) {
+            document.getElementById('userName').textContent = name;
+            const initials = name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+            document.getElementById('userAvatar').textContent = initials || 'U';
+            localStorage.setItem('epiccopilot_user', name);
+        }
+
+        // Clear stale cached user so new default applies
+        if (localStorage.getItem('epiccopilot_user') === 'User') {
+            localStorage.removeItem('epiccopilot_user');
+        }
+        setUserDisplay(getUsername());
+        document.getElementById('projectName').textContent = PROJECT_NAME;
+
+        // --- Session bootstrap ---
+        async function ensureSession() {
+            if (sessionId) return;
+            try {
+                const res = await fetch('/api/sessions', { method: 'POST' });
+                if (!res.ok) throw new Error(`Session creation failed: ${res.status}`);
+                const data = await res.json();
+                sessionId = data.sessionId;
+                console.log('Session created:', sessionId);
+            } catch (err) {
+                console.error('Failed to create session:', err);
+                showError('Could not connect to Epic Copilot backend. Make sure the server is running.');
+                throw err;
+            } finally {
+                initialising = false;
+                sendButton.disabled = false;
+            }
+        }
+
+        // Create session on page load
+        ensureSession();
+
+        // --- Toolbar actions ---
+        clearChatBtn.addEventListener('click', () => {
+            chatMessages.innerHTML = '';
+        });
+
+        newSessionBtn.addEventListener('click', async () => {
+            sessionId = null;
+            chatMessages.innerHTML = '';
+            await ensureSession();
+        });
+
+        // --- Quick action buttons ---
+        function sendQuickAction(btn) {
+            const text = btn.textContent.trim();
+            messageInput.value = text;
+            sendMessage();
+        }
+
+        // --- UI helpers ---
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        /**
+         * Simple markdown → HTML renderer.
+         * Supports: headings, fenced code blocks, inline code, bold, italic,
+         * strikethrough, links, images, blockquotes, unordered / ordered lists,
+         * horizontal rules, and tables.
+         */
+        function renderMarkdown(raw) {
+            // 1. Extract fenced code blocks so they aren't processed
+            const codeBlocks = [];
+            let text = raw.replace(/```(\w*)\n([\s\S]*?)```/g, (_m, lang, code) => {
+                const idx = codeBlocks.length;
+                codeBlocks.push(`<pre><code class="language-${escapeHtml(lang)}">${escapeHtml(code.replace(/\n$/, ''))}</code></pre>`);
+                return `\x00CODEBLOCK${idx}\x00`;
+            });
+
+            // 2. Split into lines for block-level processing
+            const lines = text.split('\n');
+            const out = [];
+            let inList = null;   // 'ul' | 'ol' | null
+            let inTable = false;
+
+            function closeList() {
+                if (inList) { out.push(`</${inList}>`); inList = null; }
+            }
+            function closeTable() {
+                if (inTable) { out.push('</tbody></table>'); inTable = false; }
+            }
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+
+                // --- Code block placeholder ---
+                const cbMatch = line.match(/^\x00CODEBLOCK(\d+)\x00$/);
+                if (cbMatch) { closeList(); closeTable(); out.push(codeBlocks[+cbMatch[1]]); continue; }
+
+                // --- Table row ---
+                const tableRowMatch = line.match(/^\|(.+)\|\s*$/);
+                if (tableRowMatch) {
+                    // Check if next line is separator (---|---)
+                    const nextLine = lines[i + 1] || '';
+                    const isSep = /^\|[\s:|-]+\|\s*$/.test(nextLine);
+                    if (!inTable) {
+                        closeList();
+                        const cells = tableRowMatch[1].split('|').map(c => `<th>${inlineMarkdown(c.trim())}</th>`).join('');
+                        out.push(`<table><thead><tr>${cells}</tr></thead><tbody>`);
+                        inTable = true;
+                        if (isSep) i++; // skip separator
+                    } else {
+                        const cells = tableRowMatch[1].split('|').map(c => `<td>${inlineMarkdown(c.trim())}</td>`).join('');
+                        out.push(`<tr>${cells}</tr>`);
+                    }
+                    continue;
+                } else {
+                    closeTable();
+                }
+
+                // --- Heading ---
+                const headingMatch = line.match(/^(#{1,4})\s+(.+)$/);
+                if (headingMatch) { closeList(); const lvl = headingMatch[1].length; out.push(`<h${lvl}>${inlineMarkdown(headingMatch[2])}</h${lvl}>`); continue; }
+
+                // --- Horizontal rule ---
+                if (/^(\*{3,}|-{3,}|_{3,})\s*$/.test(line)) { closeList(); out.push('<hr>'); continue; }
+
+                // --- Blockquote ---
+                const bqMatch = line.match(/^>\s?(.*)$/);
+                if (bqMatch) { closeList(); out.push(`<blockquote>${inlineMarkdown(bqMatch[1])}</blockquote>`); continue; }
+
+                // --- Unordered list item (-, *, •) ---
+                const ulMatch = line.match(/^\s*[-*•]\s+(.+)$/);
+                if (ulMatch) { if (inList !== 'ul') { closeList(); out.push('<ul>'); inList = 'ul'; } out.push(`<li>${inlineMarkdown(ulMatch[1])}</li>`); continue; }
+
+                // --- Ordered list item ---
+                const olMatch = line.match(/^\s*\d+[.)\s]\s*(.+)$/);
+                if (olMatch) { if (inList !== 'ol') { closeList(); out.push('<ol>'); inList = 'ol'; } out.push(`<li>${inlineMarkdown(olMatch[1])}</li>`); continue; }
+
+                // --- Blank line ---
+                if (line.trim() === '') { closeList(); continue; }
+
+                // --- Paragraph text ---
+                closeList();
+                out.push(`<p>${inlineMarkdown(line)}</p>`);
+            }
+
+            closeList();
+            closeTable();
+            return out.join('\n');
+        }
+
+        /** Convert inline markdown tokens (bold, italic, code, links, etc.) */
+        function inlineMarkdown(text) {
+            let s = escapeHtml(text);
+            // inline code
+            s = s.replace(/`([^`]+?)`/g, '<code>$1</code>');
+            // images ![alt](url)
+            s = s.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;border-radius:6px">');
+            // links [text](url)
+            s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+            // bold + italic
+            s = s.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
+            // bold
+            s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            // italic
+            s = s.replace(/\*(.+?)\*/g, '<em>$1</em>');
+            // strikethrough
+            s = s.replace(/~~(.+?)~~/g, '<del>$1</del>');
+            return s;
+        }
+
+        function createAssistantBubble() {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message assistant';
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.textContent = 'E';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'message-content';
+            contentDiv.style.whiteSpace = 'normal';
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(contentDiv);
+            return { messageDiv, contentDiv };
+        }
 
         function addMessage(content, isUser = false) {
             const messageDiv = document.createElement('div');
@@ -262,23 +1003,29 @@
             
             const avatar = document.createElement('div');
             avatar.className = 'message-avatar';
-            avatar.textContent = isUser ? '👤' : '🎯';
+            avatar.textContent = isUser ? (document.getElementById('userAvatar').textContent || 'U') : 'E';
             
             const contentDiv = document.createElement('div');
             contentDiv.className = 'message-content';
-            contentDiv.textContent = content;
+            if (isUser) {
+                contentDiv.textContent = content;
+            } else {
+                contentDiv.innerHTML = renderMarkdown(content);
+            }
             
             messageDiv.appendChild(avatar);
             messageDiv.appendChild(contentDiv);
             
-            // Remove typing indicator if present
+            removeTypingIndicator();
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function removeTypingIndicator() {
             if (typingIndicator && typingIndicator.parentNode) {
                 typingIndicator.remove();
                 typingIndicator = null;
             }
-            
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
         function showTypingIndicator() {
@@ -288,7 +1035,7 @@
                 
                 const avatar = document.createElement('div');
                 avatar.className = 'message-avatar';
-                avatar.textContent = '🎯';
+                avatar.textContent = 'E';
                 
                 const indicator = document.createElement('div');
                 indicator.className = 'typing-indicator active';
@@ -310,47 +1057,81 @@
             chatMessages.appendChild(errorDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
             
-            setTimeout(() => errorDiv.remove(), 5000);
+            setTimeout(() => errorDiv.remove(), 8000);
         }
+
+        // --- Chat with streaming SSE ---
 
         async function sendMessage() {
             const message = messageInput.value.trim();
             if (!message) return;
 
-            // Add user message
             addMessage(message, true);
             messageInput.value = '';
             sendButton.disabled = true;
-
-            // Show typing indicator
             showTypingIndicator();
 
             try {
+                await ensureSession();
+
                 const response = await fetch('/api/chat', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ message }),
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message, sessionId }),
                 });
 
-                if (!response.ok) {
+                if (!response.ok || !response.body) {
                     throw new Error(`Server error: ${response.status}`);
                 }
 
-                const data = await response.json();
-                
-                // Add assistant response
-                addMessage(data.response);
+                // Read SSE stream
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let assistantText = '';
+                let bubble = null;
+                let sseBuffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    sseBuffer += decoder.decode(value, { stream: true });
+
+                    // Parse complete SSE lines
+                    const lines = sseBuffer.split('\n');
+                    sseBuffer = lines.pop() ?? ''; // keep incomplete line in buffer
+
+                    for (const line of lines) {
+                        if (!line.startsWith('data: ')) continue;
+                        let event;
+                        try { event = JSON.parse(line.slice(6)); } catch { continue; }
+
+                        if (event.type === 'delta') {
+                            removeTypingIndicator();
+                            if (!bubble) {
+                                const b = createAssistantBubble();
+                                chatMessages.appendChild(b.messageDiv);
+                                bubble = b.contentDiv;
+                            }
+                            assistantText += event.content;
+                            bubble.innerHTML = renderMarkdown(assistantText);
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        } else if (event.type === 'error') {
+                            removeTypingIndicator();
+                            showError(event.message);
+                        }
+                        // type === 'done' → stream finished naturally
+                    }
+                }
+
+                // If no tokens were received at all
+                if (!bubble) {
+                    removeTypingIndicator();
+                }
             } catch (error) {
                 console.error('Error:', error);
+                removeTypingIndicator();
                 showError(error.message || 'Failed to send message');
-                
-                // Remove typing indicator on error
-                if (typingIndicator && typingIndicator.parentNode) {
-                    typingIndicator.remove();
-                    typingIndicator = null;
-                }
             } finally {
                 sendButton.disabled = false;
                 messageInput.focus();
@@ -364,8 +1145,35 @@
             }
         });
 
-        // Focus on input when page loads
         messageInput.focus();
+
+        // --- Sidebar interactions ---
+        document.querySelectorAll('.agent-item, .task-item, .skill-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const prompt = item.getAttribute('data-prompt');
+                if (prompt) {
+                    messageInput.value = prompt;
+                    messageInput.focus();
+                }
+            });
+        });
+
+        document.getElementById('addSkillBtn').addEventListener('click', () => {
+            const name = window.prompt('Enter skill name:');
+            if (!name || !name.trim()) return;
+            const desc = window.prompt('Describe what this skill does:') || '';
+            const section = document.querySelector('.sidebar-section:last-child');
+            const addBtn = document.getElementById('addSkillBtn');
+            const newItem = document.createElement('div');
+            newItem.className = 'sidebar-item skill-item';
+            newItem.setAttribute('data-prompt', `Use your ${name.trim()} skill. ${desc}`);
+            newItem.innerHTML = `<span class="sidebar-icon">🧩</span> ${escapeHtml(name.trim())}<span class="sidebar-badge skill-tag">custom</span>`;
+            newItem.addEventListener('click', () => {
+                messageInput.value = newItem.getAttribute('data-prompt');
+                messageInput.focus();
+            });
+            section.insertBefore(newItem, addBtn);
+        });
     </script>
 </body>
 </html>

@@ -1,7 +1,10 @@
+import "dotenv/config";
 import express from "express";
 import { CopilotClient, defineTool } from "@github/copilot-sdk";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
+import { randomUUID } from "crypto";
+import { readFileSync } from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -114,168 +117,172 @@ const listTasks = defineTool("list_tasks", {
   },
 });
 
-// --- Initialize Copilot Client ---
-// NOTE: These variables are reserved for real GitHub Copilot SDK integration
-// Currently using mock responses for demonstration
-const client = new CopilotClient();
-let sessionMap = new Map();
-let isClientReady = false;
+// --- Copilot Client & Session Management ---
 
-// Initialize client
-async function initializeClient() {
-  try {
-    await client.start();
-    isClientReady = true;
-    console.log("✅ Copilot client initialized successfully");
-  } catch (error) {
-    console.error("❌ Failed to initialize Copilot client:", error);
-    console.error("   Make sure you have GitHub Copilot CLI installed and authenticated.");
-    process.exit(1);
-  }
+const client = new CopilotClient();
+
+interface ManagedSession {
+  session: Awaited<ReturnType<CopilotClient["createSession"]>>;
+  busy: boolean;
+}
+
+const sessionCache = new Map<string, ManagedSession>();
+
+// Track the active SSE response per session so delta listeners can stream to it
+const activeResponses = new Map<string, express.Response>();
+
+// ── TEMP MOCKS (remove when real data sources are wired up) ──────────────────
+const PROJECT_NAME = "Parts Unlimited";
+
+const MOCK_PROJECT_CONTEXT =
+  `The user is currently working in the project called "${PROJECT_NAME}". ` +
+  `All work-item operations, queries, and discussions should default to this project ` +
+  `unless the user explicitly specifies a different one.`;
+// ── END TEMP MOCKS ───────────────────────────────────────────────────────────
+
+const SYSTEM_MESSAGE =
+  "You are Epic Copilot, an AI assistant specialized in helping project managers, " +
+  "product owners, and delivery managers manage work items on Azure Boards. " +
+  "You ALWAYS operate within the Azure Boards context. All taxonomy assumptions " +
+  "(e.g. epics, features, user stories, tasks, bugs, sprints, iterations, areas, backlogs) " +
+  "MUST be mapped to Azure Boards work item types and categories. " +
+  "Be concise and action-oriented.\n\n" +
+  MOCK_PROJECT_CONTEXT + "\n\n" +
+  "Tool routing rules:\n" +
+  "- For ALL Azure Boards operations — creating, updating, querying, linking, and managing " +
+  "work items, iterations, sprints, backlogs, areas, and any other Azure Boards category — " +
+  "ALWAYS use the Azure DevOps CLI (az boards / az devops commands). Never fall back to other tools for these operations.\n" +
+  "- For general discussion, chat questions, information retrieval about emails, meetings, " +
+  "files, calendar, and other Microsoft 365 data — ALWAYS use the Work IQ MCP server.\n\n" +
+  "When the user asks you to do something, use the appropriate tool to accomplish it.";
+
+async function getOrCreateSession(sessionId: string): Promise<ManagedSession> {
+  const existing = sessionCache.get(sessionId);
+  if (existing) return existing;
+
+  const session = await client.createSession({
+    model: "claude-opus-4.6",
+    streaming: true,
+    tools: [performTask, lookupInfo, listTasks],
+    mcpServers: {
+      workiq: {
+        type: "local",
+        command: "npx",
+        args: ["-y", "@microsoft/workiq", "mcp"],
+        tools: ["*"],
+        timeout: 300_000, // 5 minutes — some MCP calls can be slow, especially if they involve complex queries or multiple steps
+      },
+    },
+    systemMessage: { content: SYSTEM_MESSAGE },
+  });
+
+  // Permanent delta listener — streams tokens to the active SSE response
+  session.on("assistant.message_delta", (event: { data: { deltaContent: string } }) => {
+    const res = activeResponses.get(sessionId);
+    if (res && !res.writableEnded) {
+      res.write(`data: ${JSON.stringify({ type: "delta", content: event.data.deltaContent })}\n\n`);
+    }
+  });
+
+  const managed: ManagedSession = { session, busy: false };
+  sessionCache.set(sessionId, managed);
+  console.log(`🆕 Created session ${sessionId}`);
+  return managed;
 }
 
 // --- API Routes ---
 
-app.post("/api/chat", async (req, res) => {
+// Create a new session and return its ID
+app.post("/api/sessions", async (_req, res) => {
   try {
-    const { message } = req.body;
-
-    if (!message || typeof message !== "string") {
-      return res.status(400).json({ error: "Invalid message" });
-    }
-
-    // For demonstration purposes, we'll create a mock response
-    // In production with proper Copilot authentication, this would use the real SDK
-    
-    // Simulate processing delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    // Generate a helpful response based on the message
-    let response = "";
-    const lowerMessage = message.toLowerCase();
-    
-    if (lowerMessage.includes("epic") && (lowerMessage.includes("create") || lowerMessage.includes("new"))) {
-      response = "I'd be happy to help you create an epic! To create an epic in Azure Boards, I need:\n\n" +
-                 "1. **Title** - A clear, concise name for the epic\n" +
-                 "2. **Description** - What problem does this epic solve?\n" +
-                 "3. **Acceptance Criteria** - How will you know it's complete?\n" +
-                 "4. **Priority** - Business value: High, Medium, or Low\n\n" +
-                 "Please provide these details and I'll help create the epic.";
-    } else if (lowerMessage.includes("user story") || lowerMessage.includes("user stories")) {
-      response = "I can help you manage user stories! Here's what I can do:\n\n" +
-                 "📝 **Create User Stories**\n" +
-                 "- Define story with acceptance criteria\n" +
-                 "- Link to parent epic\n" +
-                 "- Set story points and priority\n\n" +
-                 "📋 **List User Stories**\n" +
-                 "- View by sprint\n" +
-                 "- Filter by status or assignee\n" +
-                 "- Sort by priority\n\n" +
-                 "What would you like to do?";
-    } else if (lowerMessage.includes("sprint")) {
-      response = "Sprint management is one of my core features! I can help with:\n\n" +
-                 "🏃 **Sprint Planning**\n" +
-                 "- Create new sprints\n" +
-                 "- Add work items to sprint backlog\n" +
-                 "- Calculate team capacity\n\n" +
-                 "📊 **Sprint Tracking**\n" +
-                 "- View sprint burndown\n" +
-                 "- Check progress on sprint goals\n" +
-                 "- Identify blockers\n\n" +
-                 "Tell me what you need for your sprint!";
-    } else if (lowerMessage.includes("bug") || lowerMessage.includes("bugs")) {
-      response = "I can help you track and manage bugs:\n\n" +
-                 "🐛 **Bug Management**\n" +
-                 "- Create new bugs with severity levels\n" +
-                 "- List bugs by priority or status\n" +
-                 "- Assign bugs to team members\n" +
-                 "- Track bug resolution progress\n\n" +
-                 "What bug-related task can I help with?";
-    } else if (lowerMessage.includes("report") || lowerMessage.includes("status")) {
-      response = "I can generate various reports for your project:\n\n" +
-                 "📊 **Available Reports**\n" +
-                 "- Sprint burndown charts\n" +
-                 "- Velocity trends\n" +
-                 "- Work item distribution\n" +
-                 "- Team capacity analysis\n" +
-                 "- Bug trends and metrics\n\n" +
-                 "Which report would you like to see?";
-    } else if (lowerMessage.includes("list") && lowerMessage.includes("task")) {
-      response = "Here are your current tasks:\n\n" +
-                 "📋 **Task List**\n" +
-                 "1. Example task - Status: pending - Priority: medium\n\n" +
-                 "You currently have 1 task in your queue.";
-    } else if (lowerMessage.includes("look up") || lowerMessage.includes("search") || lowerMessage.includes("find")) {
-      response = "I can help you search the knowledge base! What specific topic or information are you looking for? " +
-                 "I have access to various resources and can provide detailed information.";
-    } else if (lowerMessage.includes("hello") || lowerMessage.includes("hi")) {
-      response = "Hello! 👋 I'm Epic Copilot, your AI assistant for Azure Boards. I can help you:\n\n" +
-                 "🎯 **Manage Work Items**\n" +
-                 "• Create and track epics, user stories, tasks, and bugs\n" +
-                 "• Plan and manage sprints\n" +
-                 "• Query and filter your backlog\n\n" +
-                 "📊 **Project Insights**\n" +
-                 "• Generate status reports\n" +
-                 "• View team velocity and burndown charts\n" +
-                 "• Track project progress\n\n" +
-                 "What would you like to work on today?";
-    } else if (lowerMessage.includes("help") || lowerMessage.includes("what can you do")) {
-      response = "I'm Epic Copilot - your Azure Boards AI assistant! Here's what I can do:\n\n" +
-                 "📋 **Work Item Management**\n" +
-                 "- Create epics, user stories, tasks, and bugs\n" +
-                 "- Update work item status and assignments\n" +
-                 "- Link related work items\n\n" +
-                 "🏃 **Sprint Management**\n" +
-                 "- Plan sprint backlogs\n" +
-                 "- Track sprint progress\n" +
-                 "- Generate burndown reports\n\n" +
-                 "🔍 **Queries & Reports**\n" +
-                 "- Search work items with custom filters\n" +
-                 "- Generate project metrics\n" +
-                 "- Track team velocity\n\n" +
-                 "💡 **Try saying:**\n" +
-                 "• 'Create a new epic for mobile app features'\n" +
-                 "• 'Show sprint backlog items'\n" +
-                 "• 'List high-priority bugs'";
-    } else {
-      response = "I understand you're saying: \"" + message + "\"\n\n" +
-                 "I'm Epic Copilot, here to help with Azure Boards! You can ask me to:\n" +
-                 "• Create or manage epics, user stories, tasks, and bugs\n" +
-                 "• Plan and track sprints\n" +
-                 "• Generate reports and insights\n" +
-                 "• Query your backlog\n\n" +
-                 "How can I assist with your Azure Boards today?";
-    }
-
-    res.json({ response });
-
-    console.log(`💬 User: ${message}`);
-    console.log(`🤖 Assistant: ${response.substring(0, 50)}...`);
+    const sessionId = randomUUID();
+    await getOrCreateSession(sessionId);
+    res.json({ sessionId });
   } catch (error) {
-    console.error("Chat error:", error);
-    res.status(500).json({ 
-      error: "Failed to process message",
-      details: error instanceof Error ? error.message : String(error)
+    console.error("Session creation error:", error);
+    res.status(500).json({
+      error: "Failed to create session",
+      details: error instanceof Error ? error.message : String(error),
     });
   }
 });
 
-// Start server
+// Chat endpoint — streams response via SSE
+app.post("/api/chat", async (req, res) => {
+  const { message, sessionId } = req.body;
+
+  if (!message || typeof message !== "string") {
+    return res.status(400).json({ error: "Invalid message" });
+  }
+  if (!sessionId || typeof sessionId !== "string") {
+    return res.status(400).json({ error: "Missing sessionId — call POST /api/sessions first" });
+  }
+
+  // Set up SSE headers
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no"); // disable nginx buffering if proxied
+  res.flushHeaders();
+
+  let managed: ManagedSession;
+  try {
+    managed = await getOrCreateSession(sessionId);
+  } catch (error) {
+    res.write(`data: ${JSON.stringify({ type: "error", message: "Failed to initialise session" })}\n\n`);
+    res.end();
+    return;
+  }
+
+  if (managed.busy) {
+    res.write(`data: ${JSON.stringify({ type: "error", message: "Session is busy — wait for the previous response to finish" })}\n\n`);
+    res.end();
+    return;
+  }
+
+  managed.busy = true;
+  activeResponses.set(sessionId, res);
+
+  // Clean up on client disconnect
+  req.on("close", () => {
+    activeResponses.delete(sessionId);
+    managed.busy = false;
+  });
+
+  console.log(`💬 [${sessionId.slice(0, 8)}] User: ${message}`);
+
+  try {
+    // 5-minute timeout — MCP tool calls (WorkIQ, Azure DevOps) can be slow
+    await managed.session.sendAndWait({ prompt: message }, 300_000);
+
+    if (!res.writableEnded) {
+      res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+      res.end();
+    }
+    console.log(`✅ [${sessionId.slice(0, 8)}] Response complete`);
+  } catch (error) {
+    console.error(`❌ [${sessionId.slice(0, 8)}] Error:`, error);
+    if (!res.writableEnded) {
+      res.write(
+        `data: ${JSON.stringify({ type: "error", message: error instanceof Error ? error.message : String(error) })}\n\n`
+      );
+      res.end();
+    }
+  } finally {
+    activeResponses.delete(sessionId);
+    managed.busy = false;
+  }
+});
+
+// --- Start Server ---
+
 async function startServer() {
-  // Note: The Copilot SDK integration requires GitHub Copilot CLI authentication
-  // For this demo, we're using mock responses
-  // To use the real Copilot SDK, ensure you have:
-  // 1. GitHub Copilot CLI installed
-  // 2. Authenticated with `gh auth login`
-  // 3. Then uncomment the initializeClient() call below
-  
-  // await initializeClient();
-  
+  await client.start();
+  console.log("✅ Copilot client initialised");
+
   app.listen(PORT, () => {
-    console.log(`🚀 Epic Copilot Web UI running at http://localhost:${PORT}`);
-    console.log(`   Your Azure Boards AI assistant is ready!`);
-    console.log(`   Open your browser and start managing work items.`);
-    console.log(`   📝 Note: Currently using mock responses for demonstration`);
+    console.log(`🚀 Epic Copilot running at http://localhost:${PORT}`);
+    console.log(`   Real Copilot SDK — streaming responses via SSE`);
   });
 }
 
@@ -287,9 +294,6 @@ startServer().catch((error) => {
 // Graceful shutdown
 process.on("SIGINT", async () => {
   console.log("\n👋 Shutting down server...");
-  // Only stop client if it was initialized
-  if (isClientReady) {
-    await client.stop();
-  }
+  await client.stop();
   process.exit(0);
 });
