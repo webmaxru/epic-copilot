@@ -49,23 +49,20 @@ test.describe('Toolbar actions', () => {
   });
 
   test('new session clears chat and creates a fresh session', async ({ page }) => {
-    let sessionRequests = 0;
-    await page.route('**/api/sessions', (route) => {
-      sessionRequests++;
-      route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({ sessionId: `session-${sessionRequests}` }),
-      });
-    });
-
-    // Wait for initial session
-    await page.waitForTimeout(500);
-
     // Send a message
     await page.fill('#messageInput', 'Before new session');
     await page.click('#sendButton');
     await expect(page.locator('.message.user')).toHaveCount(1);
+
+    let newSessionRequested = false;
+    await page.route('**/api/sessions', (route) => {
+      newSessionRequested = true;
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ sessionId: 'new-session-id' }),
+      });
+    });
 
     // Click new session
     await page.click('#newSessionBtn');
@@ -73,7 +70,10 @@ test.describe('Toolbar actions', () => {
     // Chat should be cleared
     await expect(page.locator('.message')).toHaveCount(0);
 
-    // A second session request should have been made
-    expect(sessionRequests).toBeGreaterThanOrEqual(2);
+    // Wait briefly for the session request to fire
+    await page.waitForTimeout(500);
+
+    // A new session request should have been made
+    expect(newSessionRequested).toBe(true);
   });
 });

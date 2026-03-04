@@ -1,10 +1,25 @@
 import "dotenv/config";
 import express from "express";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import { CopilotClient, defineTool } from "@github/copilot-sdk";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { randomUUID } from "crypto";
 import { readFileSync } from "fs";
+
+// Application Insights — initialise early so all requests are tracked
+if (process.env["APPLICATIONINSIGHTS_CONNECTION_STRING"]) {
+  const appInsights = await import("applicationinsights");
+  appInsights.default
+    .setup(process.env["APPLICATIONINSIGHTS_CONNECTION_STRING"])
+    .setAutoCollectRequests(true)
+    .setAutoCollectPerformance(true, true)
+    .setAutoCollectExceptions(true)
+    .setAutoCollectDependencies(true)
+    .start();
+  console.log("📊 Application Insights enabled");
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,8 +27,34 @@ const __dirname = dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(express.json());
+// Security middleware
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
+        imgSrc: ["'self'", "data:"],
+        connectSrc: ["'self'"],
+      },
+    },
+  })
+);
+
+// Rate limiting
+const apiLimiter = rateLimit({
+  windowMs: 60_000,
+  limit: 30,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
+  message: { error: "Too many requests — please try again later" },
+});
+app.use("/api/", apiLimiter);
+
+// Body parsing & static files
+app.use(express.json({ limit: "16kb" }));
 app.use(express.static(join(__dirname, "../public")));
 
 // --- Custom Tools for the Agent ---
@@ -211,8 +252,11 @@ app.post("/api/sessions", async (_req, res) => {
 app.post("/api/chat", async (req, res) => {
   const { message, sessionId } = req.body;
 
-  if (!message || typeof message !== "string") {
+  if (!message || typeof message !== "string" || message.trim().length === 0) {
     return res.status(400).json({ error: "Invalid message" });
+  }
+  if (message.length > 4000) {
+    return res.status(400).json({ error: "Message too long — 4 000 character limit" });
   }
   if (!sessionId || typeof sessionId !== "string") {
     return res.status(400).json({ error: "Missing sessionId — call POST /api/sessions first" });

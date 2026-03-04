@@ -1,0 +1,15 @@
+node_modules
+dist
+.env
+.git
+.github
+.vscode
+.agents
+*.md
+!README.md
+playwright-report
+test-results
+tmpclaude-*
+mock-data
+presentations
+customer

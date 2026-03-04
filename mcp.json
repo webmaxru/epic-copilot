@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/mcp.json",
+  "description": "MCP server configuration for Epic Copilot runtime",
+  "servers": {
+    "workiq": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@microsoft/workiq", "mcp"],
+      "description": "Microsoft Work IQ MCP server — provides access to Microsoft 365 data including emails, meetings, files, and calendar events. Used for gathering project context from organizational communications.",
+      "tools": ["*"],
+      "timeout": 300000
+    }
+  }
+}

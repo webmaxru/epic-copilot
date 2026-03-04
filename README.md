@@ -17,6 +17,11 @@ Built around Azure Boards, Epic Copilot brings together work item management and
 - 💬 Natural language interactions with Azure DevOps
 - 📧 Microsoft 365 data access (emails, meetings, files) via Work IQ MCP
 - 🎨 Modern web UI with streaming responses
+- 🔒 Security hardened with Helmet, rate limiting, and input validation
+- 📈 Azure Application Insights observability
+- 🚀 One-command Azure deployment via `azd up`
+
+> **Full documentation**: See [docs/README.md](docs/README.md) for architecture, deployment, RAI notes, and more.
 
 ## Screenshots
 
@@ -155,14 +160,40 @@ Compile TypeScript to JavaScript:
 npm run build
 ```
 
+## Architecture
+
+```mermaid
+graph LR
+    UI["Browser UI"] -->|HTTP / SSE| API["Express Server"]
+    API --> SDK["Copilot SDK"]
+    SDK -->|API| GH["GitHub Copilot API"]
+    GH -->|Tool calls| WIQ["Work IQ MCP\n(M365 data)"]
+    GH -->|Tool calls| ADO["Azure DevOps CLI\n(Azure Boards)"]
+    API --> AI["App Insights"]
+```
+
 ## Project Structure
 
 ```
 epic-copilot/
 ├── src/
-│   └── server.ts     # Express web server with Copilot SDK integration
+│   └── server.ts          # Express server + Copilot SDK integration
 ├── public/
-│   └── index.html    # Web UI for the chatbot
+│   └── index.html         # Chat UI (vanilla JS)
+├── docs/
+│   └── README.md          # Full documentation, architecture, RAI notes
+├── infra/
+│   ├── main.bicep         # Azure Container Apps infrastructure
+│   └── modules/           # Bicep modules (monitoring, registry, apps)
+├── presentations/
+│   └── README.md          # Slide deck outline
+├── customer/
+│   └── README.md          # Customer validation
+├── tests/                 # Playwright E2E tests (50+)
+├── AGENTS.md              # Agent custom instructions
+├── mcp.json               # MCP server configuration
+├── Dockerfile             # Container image
+├── azure.yaml             # Azure Developer CLI config
 ├── package.json
 └── tsconfig.json
 ```
@@ -183,10 +214,15 @@ Epic Copilot helps you manage Azure Boards work items through natural language:
 ## Technologies
 
 - **Runtime**: Node.js, TypeScript
-- **Web Framework**: Express
+- **Web Framework**: Express 5
 - **AI**: GitHub Copilot SDK
-- **MCP Servers**: Work IQ MCP
+- **MCP Servers**: Work IQ MCP (Microsoft 365)
 - **Frontend**: Vanilla JavaScript, HTML5, CSS3
+- **Infrastructure**: Azure Container Apps, Bicep, Azure Developer CLI
+- **Observability**: Azure Application Insights
+- **Security**: Helmet, express-rate-limit, input validation
+- **CI/CD**: GitHub Actions
+- **Testing**: Playwright (50+ E2E tests)
 
 ## Troubleshooting
 

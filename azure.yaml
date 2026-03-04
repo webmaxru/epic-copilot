@@ -1,0 +1,17 @@
+# Azure Developer CLI (azd) configuration
+# Run `azd up` to provision infrastructure and deploy the application
+name: epic-copilot
+metadata:
+  template: epic-copilot@0.0.1
+
+services:
+  web:
+    project: .
+    host: containerapp
+    language: ts
+    docker:
+      path: Dockerfile
+
+infra:
+  provider: bicep
+  path: infra
