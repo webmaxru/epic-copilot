@@ -6,7 +6,9 @@
   "scripts": {
     "start": "tsx src/server.ts",
     "build": "tsc",
-    "dev": "tsx watch src/server.ts"
+    "dev": "tsx watch src/server.ts",
+    "test": "npx playwright test",
+    "test:ui": "npx playwright test --ui"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +23,8 @@
     "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "@types/express": "^5.0.6"
+    "@playwright/test": "^1.58.2",
+    "@types/express": "^5.0.6",
+    "serve": "^14.2.5"
   }
 }
