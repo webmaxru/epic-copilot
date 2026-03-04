@@ -234,6 +234,84 @@ Epic Copilot helps you manage Azure Boards work items through natural language:
 | `401 Unauthorized` from Azure DevOps | Check that `ADO_MCP_AUTH_TOKEN` is set and PAT has correct scopes |
 | Server won't start | Ensure `node --version` is 18+ and `npm install` completed successfully |
 
+## Key points
+
+### Enterprise Applicability, Reusability & Business Value
+
+Epic Copilot targets a real enterprise pain point: **project managers and delivery managers are disconnected from the developer toolchain**. They context-switch between Azure Boards, Outlook, Teams, and spreadsheets to track progress, while developers work inside Azure DevOps every day and the insights generated there rarely flow back to leadership in real time.
+
+- **Enterprise-ready use case** — Azure Boards work item management via natural language, designed for organizations already using Azure DevOps
+- **Reusable architecture** — The Copilot SDK + MCP server pattern is a template any team can fork and adapt to their own tools and workflows. Swap the MCP servers to connect to Jira, ServiceNow, or any other system
+- **Business value** — Reduces context-switching for PMs, enables real-time project visibility without developer interruption, and turns scattered M365 data (emails, meetings, files) into actionable work items
+
+### Integration with Azure & Microsoft Solutions
+
+Epic Copilot is deeply integrated across the Microsoft stack:
+
+| Integration | How it's used |
+|---|---|
+| **Azure DevOps / Azure Boards** | Core work item CRUD — create, update, query, and link epics, features, user stories, tasks, and bugs via `az boards` CLI |
+| **Work IQ MCP** | Microsoft 365 data access — pulls context from emails, meetings, files, and calendar to enrich work item creation and status reports |
+| **GitHub Copilot SDK** | The agent core — handles model access, tool orchestration, streaming, and session management |
+| **Azure Container Apps** | Production deployment target with auto-scaling (Bicep infrastructure in `infra/`) |
+| **Azure Container Registry** | Private container image storage for the Dockerfile-based build |
+| **Azure Application Insights** | APM observability — request telemetry, error tracking, and performance metrics |
+| **Azure Log Analytics** | Centralized logging for Container Apps and Application Insights |
+| **Azure Developer CLI (`azd`)** | One-command deployment via `azd up` — provisions all infrastructure and deploys the app |
+
+### Operational Readiness
+
+The project is production-deployable, not just a prototype:
+
+- **Deployability** — `Dockerfile` with multi-stage build, `azure.yaml` for `azd up`, Bicep infrastructure templates in `infra/` with Container Apps + auto-scaling (0–3 replicas)
+- **Observability** — Azure Application Insights integration in `src/server.ts` with auto-collection of requests, performance, exceptions, and dependencies. Log Analytics workspace for centralized logging
+- **CI/CD** — GitHub Actions workflow (`.github/workflows/ci.yml`) with: install → build → Playwright tests → Docker build → smoke test
+- **Testing** — 40+ Playwright E2E tests covering chat functionality, layout, responsive design, sidebar, and toolbar interactions
+
+### Security, Governance & Responsible AI Excellence
+
+**Security hardening:**
+- **Helmet** — Sets strict HTTP security headers (CSP, HSTS, X-Content-Type-Options, etc.)
+- **Rate limiting** — 30 requests/minute per client via `express-rate-limit`, preventing abuse
+- **Input validation** — Message length capped at 4,000 characters, empty/malformed messages rejected
+- **Non-root container** — The Dockerfile runs the app as a non-root user (`appuser`)
+- **No data persistence** — Sessions are in-memory only; no user data is stored server-side
+
+**Responsible AI:**
+- **Scoped agent** — The system prompt constrains the agent strictly to Azure Boards operations, preventing off-topic or harmful content generation
+- **Human-in-the-loop** — All work item changes go through Azure DevOps APIs with full audit trails; users can review/undo via the standard Boards UI
+- **Permission-bounded** — Work IQ operates under the user's own M365 permissions; Azure DevOps uses the authenticated CLI session's RBAC
+- **Transparency** — All tool calls are server-side logged; streaming UI shows responses in real time
+- **No training on user data** — Conversations are not used to train or fine-tune models
+
+See [docs/README.md — RAI Notes](docs/README.md#responsible-ai-rai-notes) for the full Responsible AI section.
+
+### Storytelling, Clarity & "Amplification Ready" Quality
+
+- **Clear problem → solution narrative** — PMs disconnected from dev tools → natural-language bridge powered by Copilot SDK
+- **Architecture diagram** — Mermaid diagram in this README and a detailed version in [docs/README.md](docs/README.md)
+- **Screenshots** — Two screenshots showing the chat UI with sidebar agents, prompts, and skills
+- **Presentation deck** — Slide outline in `presentations/README.md` with business value + architecture ready for the final PPTX
+- **Demo-ready** — The app runs locally with `npm start` or deploys to Azure with `azd up`; designed for live walkthroughs
+
+### Use of Work IQ
+
+Epic Copilot integrates the **Work IQ MCP server** (`@microsoft/workiq`) as a first-class data source. This enables the agent to:
+
+- Pull context from **emails** — "Find emails about the API migration and create a user story from the requirements discussed"
+- Reference **meeting notes** — "What decisions were made in the last sprint review?"
+- Access **files and calendar** — "What's on my calendar this week that relates to the mobile redesign?"
+
+Work IQ is configured as an MCP server alongside the Azure DevOps CLI, making Microsoft 365 data directly available to the agent during conversations. This turns scattered organizational knowledge into structured Azure Boards work items.
+
+### Validated with a Customer
+
+The solution has been validated with customer stakeholders who manage projects using Azure Boards. Feedback confirmed that natural-language access to work items and the ability to pull M365 context (meeting notes, emails) into work item creation are the highest-value differentiators. See `customer/README.md`.
+
+### Copilot SDK Product Feedback
+
+Product feedback based on building this project has been shared in the internal Copilot SDK Teams channel. Key areas: MCP server timeout handling, streaming event API ergonomics, and session lifecycle documentation.
+
 ## License
 
 MIT
