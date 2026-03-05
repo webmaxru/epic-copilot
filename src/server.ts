@@ -215,6 +215,10 @@ async function getOrCreateSession(sessionId: string): Promise<ManagedSession> {
       },
     },
     systemMessage: { content: SYSTEM_MESSAGE },
+    onPermissionRequest: async (request) => {
+      console.log(`🔐 Auto-approving permission: ${request.kind}`);
+      return { kind: "approved" };
+    },
   });
 
   // Permanent delta listener — streams tokens to the active SSE response

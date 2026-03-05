@@ -759,16 +759,16 @@
                     <h2>Welcome to Epic Copilot</h2>
                     <p>I'm your AI assistant for managing Azure Boards work items. I help project managers, product owners, and delivery managers with complex Azure DevOps tasks.</p>
                     <div class="quick-actions">
-                        <button class="quick-action" onclick="sendQuickAction(this)">
+                        <button class="quick-action">
                             <span class="quick-action-icon">📧</span>Summarize the latest email thread about this project and create an epic with acceptance criteria from it
                         </button>
-                        <button class="quick-action" onclick="sendQuickAction(this)">
+                        <button class="quick-action">
                             <span class="quick-action-icon">🔗</span>Find work items that have no parent epic and suggest which existing epic each should belong to
                         </button>
-                        <button class="quick-action" onclick="sendQuickAction(this)">
+                        <button class="quick-action">
                             <span class="quick-action-icon">⚠️</span>Analyze the current sprint and flag any user stories at risk of not being completed based on remaining capacity
                         </button>
-                        <button class="quick-action" onclick="sendQuickAction(this)">
+                        <button class="quick-action">
                             <span class="quick-action-icon">✂️</span>Break down the most recent epic into features and user stories with acceptance criteria
                         </button>
                     </div>
@@ -858,11 +858,13 @@
         });
 
         // --- Quick action buttons ---
-        function sendQuickAction(btn) {
+        document.querySelector('.quick-actions').addEventListener('click', (e) => {
+            const btn = e.target.closest('.quick-action');
+            if (!btn) return;
             const text = btn.textContent.trim();
             messageInput.value = text;
             sendMessage();
-        }
+        });
 
         // --- UI helpers ---
 
