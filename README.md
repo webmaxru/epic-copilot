@@ -4,11 +4,22 @@
   <img src="public/assets/logo.png" alt="Epic Copilot Logo" width="400" />
 </p>
 
-Epic Copilot is an AI‑powered assistant that closes the collaboration gap between project managers, product owners, delivery managers, and developers by working inside the same tools, context, and workflows. Built on the GitHub Copilot SDK, it enables non‑developer roles to act with developer‑level clarity—without leaving their daily environment.
+<p align="center">
+  <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node.js-20+-339933.svg?logo=nodedotjs&logoColor=white" alt="Node.js 20+" /></a>
+  <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-5.9-3178C6.svg?logo=typescript&logoColor=white" alt="TypeScript" /></a>
+  <a href="https://expressjs.com/"><img src="https://img.shields.io/badge/Express-5-000000.svg?logo=express&logoColor=white" alt="Express 5" /></a>
+  <a href="https://github.com/features/copilot"><img src="https://img.shields.io/badge/GitHub%20Copilot%20SDK-8957e5.svg?logo=github&logoColor=white" alt="GitHub Copilot SDK" /></a>
+  <a href="https://www.microsoft.com/en-us/microsoft-365"><img src="https://img.shields.io/badge/Microsoft%20365-WorkIQ-D83B01.svg?logo=microsoft&logoColor=white" alt="WorkIQ" /></a>
+  <a href="https://playwright.dev/"><img src="https://img.shields.io/badge/tests-40%20E2E%20(Playwright)-2EAD33.svg?logo=playwright&logoColor=white" alt="40 E2E Tests" /></a>
+  <a href="https://azure.microsoft.com/en-us/products/container-apps"><img src="https://img.shields.io/badge/Azure-Container%20Apps-0078D4.svg?logo=microsoftazure&logoColor=white" alt="Azure Container Apps" /></a>
+  <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/Docker-ready-2496ED.svg?logo=docker&logoColor=white" alt="Docker" /></a>
+  <a href="https://helmetjs.github.io/"><img src="https://img.shields.io/badge/security-Helmet-7952B3.svg?logo=letsencrypt&logoColor=white" alt="Helmet Security" /></a>
+  <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="MIT License" />
+</p>
 
-Crucially, Epic Copilot is built around a real enterprise customer need: it was inspired by a backlog‑management workshop delivered with an enterprise delivery‑manager community (“chat with your backlog”) and validated as a genuine business use case.
+Epic Copilot is an AI-powered assistant that helps project managers, product owners, and delivery managers work in lockstep with developers. It operates in the same context and on the same underlying tools, enabling clearer communication and smoother collaboration across roles, powered by the GitHub Copilot SDK.
 
-Centered on Azure Boards, it transforms fragmented signals from emails, files, meeting notes, and call summaries across Microsoft 365 into actionable work items, sprint plans, and up‑to‑date status reports via natural language. The current version combines the Copilot SDK with the Azure DevOps CLI; the next iteration leverages Azure DevOps MCP and Work IQ MCP for deeper traceability and automation.
+Built around Azure Boards, Epic Copilot brings together work item management and insights from your existing data such as emails, files, call summaries, and meeting notes. By combining the GitHub Copilot SDK with the Azure DevOps CLI today, and Azure DevOps MCP in the next version, along with Work IQ MCP, it turns information spread across Microsoft 365 into actionable work items, sprint plans, and up-to-date status reports using natural language.
 
 ## Features
 
